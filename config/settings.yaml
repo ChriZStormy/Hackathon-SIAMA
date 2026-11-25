@@ -1,6 +1,6 @@
 project:
   name: "SIAMA-Impute"
-  version: "0.1.0"
+  version: "0.2.0"
   region: "Guanajuato, México"
   crs_epsg: 4326
 
@@ -18,6 +18,9 @@ paths:
 data_schema:
   station_id_col: "id_estacion"
   date_col: "fecha"
+  lat_col: "latitud"
+  lon_col: "longitud"
+  alt_col: "altitud_m"
   variables:
     - "precipitacion"
     - "tmax"
@@ -32,11 +35,46 @@ data_schema:
     - "null"
     - ""
 
+seasons:
+  # Temporada de lluvias típica en Guanajuato: mayo a octubre
+  lluvias_months: [5, 6, 7, 8, 9, 10]
+  estiaje_months: [11, 12, 1, 2, 3, 4]
+
 physical_constraints:
   precip_min: 0.0
+  precip_max_plausible_mm: 350.0
   enforce_tmax_gt_tmin: true
   temp_min_plausible_c: -20.0
   temp_max_plausible_c: 55.0
+  diurnal_range_min_c: 0.5
+  diurnal_range_max_c: 35.0
+
+gap_diagnostics:
+  short_max_days: 3
+  medium_max_days: 30
+
+qc:
+  stuck_temp_min_days: 5
+  wet_zero_precip_min_days: 10
+  wet_zero_neighbor_min_rain_days: 4
+  wet_zero_neighbor_min_cum_mm: 20.0
+  neighbor_top_k: 4
+  neighbor_min_corr: 0.25
+  max_daily_temp_jump_c: 15.0
+  temp_mad_z_threshold: 6.0
+
+homogeneity:
+  alpha: 0.05
+  min_months: 24
+  min_segment_months: 6
+  snht_mc_simulations: 500
+  double_mass_slope_change_threshold: 0.15
+  neighbor_top_k: 4
+  donor_weights:
+    homogenea: 1.0
+    sospechosa: 0.5
+    no_homogenea: 0.1
+  random_seed: 42
 
 baseline:
   method: "linear_interpolation"

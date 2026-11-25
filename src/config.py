@@ -56,7 +56,7 @@ class PathsConfig(BaseModel):
 
 class ProjectConfig(BaseModel):
     name: str = "SIAMA-Impute"
-    version: str = "0.1.0"
+    version: str = "0.2.0"
     region: str = "Guanajuato, México"
     crs_epsg: int = 4326
 
@@ -64,17 +64,61 @@ class ProjectConfig(BaseModel):
 class DataSchemaConfig(BaseModel):
     station_id_col: str = "id_estacion"
     date_col: str = "fecha"
+    lat_col: str = "latitud"
+    lon_col: str = "longitud"
+    alt_col: str = "altitud_m"
     variables: list[str] = Field(default_factory=lambda: ["precipitacion", "tmax", "tmin"])
     missing_value_codes: list[Any] = Field(
         default_factory=lambda: [-999, -999.0, -9999, -99.9, "NA", "N/A", "null", ""]
     )
 
 
+class SeasonsConfig(BaseModel):
+    lluvias_months: list[int] = Field(default_factory=lambda: [5, 6, 7, 8, 9, 10])
+    estiaje_months: list[int] = Field(default_factory=lambda: [11, 12, 1, 2, 3, 4])
+
+
 class PhysicalConstraintsConfig(BaseModel):
     precip_min: float = 0.0
+    precip_max_plausible_mm: float = 350.0
     enforce_tmax_gt_tmin: bool = True
     temp_min_plausible_c: float = -20.0
     temp_max_plausible_c: float = 55.0
+    diurnal_range_min_c: float = 0.5
+    diurnal_range_max_c: float = 35.0
+
+
+class GapDiagnosticsConfig(BaseModel):
+    short_max_days: int = 3
+    medium_max_days: int = 30
+
+
+class QCConfig(BaseModel):
+    stuck_temp_min_days: int = 5
+    wet_zero_precip_min_days: int = 10
+    wet_zero_neighbor_min_rain_days: int = 4
+    wet_zero_neighbor_min_cum_mm: float = 20.0
+    neighbor_top_k: int = 4
+    neighbor_min_corr: float = 0.25
+    max_daily_temp_jump_c: float = 15.0
+    temp_mad_z_threshold: float = 6.0
+
+
+class HomogeneityConfig(BaseModel):
+    alpha: float = 0.05
+    min_months: int = 24
+    min_segment_months: int = 6
+    snht_mc_simulations: int = 500
+    double_mass_slope_change_threshold: float = 0.15
+    neighbor_top_k: int = 4
+    donor_weights: dict[str, float] = Field(
+        default_factory=lambda: {
+            "homogenea": 1.0,
+            "sospechosa": 0.5,
+            "no_homogenea": 0.1,
+        }
+    )
+    random_seed: int = 42
 
 
 class BaselineConfig(BaseModel):
@@ -100,9 +144,13 @@ class Settings(BaseModel):
     project: ProjectConfig = Field(default_factory=ProjectConfig)
     paths: PathsConfig = Field(default_factory=PathsConfig)
     data_schema: DataSchemaConfig = Field(default_factory=DataSchemaConfig)
+    seasons: SeasonsConfig = Field(default_factory=SeasonsConfig)
     physical_constraints: PhysicalConstraintsConfig = Field(
         default_factory=PhysicalConstraintsConfig
     )
+    gap_diagnostics: GapDiagnosticsConfig = Field(default_factory=GapDiagnosticsConfig)
+    qc: QCConfig = Field(default_factory=QCConfig)
+    homogeneity: HomogeneityConfig = Field(default_factory=HomogeneityConfig)
     baseline: BaselineConfig = Field(default_factory=BaselineConfig)
     database: DatabaseConfig = Field(default_factory=DatabaseConfig)
 
