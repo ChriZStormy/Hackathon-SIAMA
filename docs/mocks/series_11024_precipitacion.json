@@ -1,0 +1,55 @@
+{
+  "clave_estacion": "11024",
+  "variable": "precipitacion",
+  "datos": [
+    {
+      "fecha": "2024-05-12",
+      "valor_observado": 0.0,
+      "valor_estimado": null,
+      "es_estimado": false,
+      "bandera_calidad": "observado",
+      "incertidumbre_90": null
+    },
+    {
+      "fecha": "2024-05-13",
+      "valor_observado": null,
+      "valor_estimado": 0.0,
+      "es_estimado": true,
+      "bandera_calidad": "estimado_alta_confianza",
+      "incertidumbre_90": [
+        0.0,
+        3.2
+      ]
+    },
+    {
+      "fecha": "2024-05-14",
+      "valor_observado": null,
+      "valor_estimado": 12.4,
+      "es_estimado": true,
+      "bandera_calidad": "estimado_alta_confianza",
+      "incertidumbre_90": [
+        8.1,
+        16.9
+      ]
+    },
+    {
+      "fecha": "2024-05-15",
+      "valor_observado": null,
+      "valor_estimado": 0.0,
+      "es_estimado": true,
+      "bandera_calidad": "estimado_alta_confianza",
+      "incertidumbre_90": [
+        0.0,
+        3.2
+      ]
+    },
+    {
+      "fecha": "2024-05-16",
+      "valor_observado": 0.0,
+      "valor_estimado": null,
+      "es_estimado": false,
+      "bandera_calidad": "observado",
+      "incertidumbre_90": null
+    }
+  ]
+}
