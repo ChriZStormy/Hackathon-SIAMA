@@ -1,0 +1,13 @@
+{
+  "clave_estacion": "11024",
+  "variable": "precipitacion",
+  "porcentaje_faltantes": 9.44,
+  "conteo_huecos": {
+    "cortos": 5,
+    "medios": 2,
+    "largos": 1
+  },
+  "metodo_recomendado": "granite_ttm_hibrido",
+  "alerta_homogeneidad": true,
+  "detalle_homogeneidad": "Posible quiebre detectado en 2018-06"
+}

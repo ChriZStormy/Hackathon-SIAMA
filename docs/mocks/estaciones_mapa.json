@@ -1,0 +1,90 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -100.8157,
+          20.5235
+        ]
+      },
+      "properties": {
+        "clave": "11012",
+        "nombre": "Celaya (INIFAP)",
+        "completitud_pct": 91.8,
+        "alerta_homogeneidad": true,
+        "huecos_totales": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -101.2574,
+          21.019
+        ]
+      },
+      "properties": {
+        "clave": "11024",
+        "nombre": "Guanajuato (DGE)",
+        "completitud_pct": 90.6,
+        "alerta_homogeneidad": true,
+        "huecos_totales": 8
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -101.686,
+          21.125
+        ]
+      },
+      "properties": {
+        "clave": "11036",
+        "nombre": "León (SMN)",
+        "completitud_pct": 97.1,
+        "alerta_homogeneidad": false,
+        "huecos_totales": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -100.9344,
+          21.1561
+        ]
+      },
+      "properties": {
+        "clave": "11058",
+        "nombre": "Dolores Hidalgo",
+        "completitud_pct": 92.9,
+        "alerta_homogeneidad": false,
+        "huecos_totales": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -101.3563,
+          20.6767
+        ]
+      },
+      "properties": {
+        "clave": "11079",
+        "nombre": "Irapuato (Presa La Purísima)",
+        "completitud_pct": 96.8,
+        "alerta_homogeneidad": false,
+        "huecos_totales": 4
+      }
+    }
+  ]
+}

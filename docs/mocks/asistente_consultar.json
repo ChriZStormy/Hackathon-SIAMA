@@ -1,0 +1,8 @@
+{
+  "respuesta": "En la estación 11024 (Guanajuato (DGE)) para la variable precipitacion del 2024-06-01 al 2024-10-31, el 90.8% de los datos son observados y el 9.2% son estimados. El diagnóstico global registra 5 huecos cortos, 2 medios y 1 largos, recomendando el método granite_ttm_hibrido. Advertencia de homogeneidad activa: Posible quiebre detectado en 2018-06. El modelo mejor evaluado (IBM Granite TTM) alcanza un KGE de 0.82 con cobertura empírica del intervalo al 90% de 90.6%.",
+  "verificado_guardian": true,
+  "resumen_auditoria": {
+    "pct_observado": 90.8,
+    "pct_estimado": 9.2
+  }
+}

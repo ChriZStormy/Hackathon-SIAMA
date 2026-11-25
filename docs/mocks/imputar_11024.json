@@ -1,0 +1,33 @@
+{
+  "clave_estacion": "11024",
+  "variable": "precipitacion",
+  "datos": [
+    {
+      "fecha": "2024-05-13",
+      "valor_observado": 5.2,
+      "valor_estimado": null,
+      "es_estimado": false,
+      "bandera_calidad": "observado",
+      "incertidumbre_90": null
+    },
+    {
+      "fecha": "2024-05-14",
+      "valor_observado": null,
+      "valor_estimado": 2.06,
+      "es_estimado": true,
+      "bandera_calidad": "estimado_alta_confianza",
+      "incertidumbre_90": [
+        0.0,
+        4.86
+      ]
+    },
+    {
+      "fecha": "2024-05-15",
+      "valor_observado": 0.0,
+      "valor_estimado": null,
+      "es_estimado": false,
+      "bandera_calidad": "observado",
+      "incertidumbre_90": null
+    }
+  ]
+}

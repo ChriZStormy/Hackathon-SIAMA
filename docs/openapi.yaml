@@ -1,0 +1,826 @@
+openapi: 3.1.0
+info:
+  title: SIAMA-Impute API
+  description: Servicio de consulta, completitud climatológica y asistente Granite
+    para Guanajuato (SIAMA Web).
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      tags:
+      - system
+      summary: Healthcheck
+      description: Endpoint de verificación de salud del servicio.
+      operationId: healthcheck_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /status/data:
+    get:
+      tags:
+      - system
+      summary: Data Status
+      description: Informa el estado de disponibilidad de los archivos oficiales en
+        data/raw/.
+      operationId: data_status_status_data_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatasetStatusResponse'
+  /api/v1/auth/keys:
+    post:
+      tags:
+      - auth
+      summary: Create Api Key
+      description: Genera una nueva API Key (almacenando únicamente su hash SHA-256
+        en BD).
+      operationId: create_api_key_api_v1_auth_keys_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApiKeyRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateApiKeyResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/estaciones/mapa:
+    get:
+      tags:
+      - estaciones
+      summary: Obtener Mapa Estaciones
+      description: Devuelve un GeoJSON FeatureCollection de todas las estaciones listo
+        para Leaflet.
+      operationId: obtener_mapa_estaciones_api_v1_estaciones_mapa_get
+      parameters:
+      - name: X-API-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Key
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstacionesMapaResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/estaciones/{clave}/diagnostico:
+    get:
+      tags:
+      - estaciones
+      summary: Obtener Diagnostico Estacion
+      description: Devuelve el diagnóstico de vacíos, clasificación de huecos y estado
+        de homogeneidad.
+      operationId: obtener_diagnostico_estacion_api_v1_estaciones__clave__diagnostico_get
+      parameters:
+      - name: clave
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Clave
+      - name: variable
+        in: query
+        required: false
+        schema:
+          enum:
+          - precipitacion
+          - tmax
+          - tmin
+          type: string
+          default: precipitacion
+          title: Variable
+      - name: X-API-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Key
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosticoResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/estaciones/{clave}/series:
+    get:
+      tags:
+      - estaciones
+      summary: Obtener Series Estacion
+      description: Devuelve la serie diaria en JSON o CSV garantizando trazabilidad
+        e incertidumbre.
+      operationId: obtener_series_estacion_api_v1_estaciones__clave__series_get
+      parameters:
+      - name: clave
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Clave
+      - name: variable
+        in: query
+        required: true
+        schema:
+          enum:
+          - precipitacion
+          - tmax
+          - tmin
+          type: string
+          title: Variable
+      - name: desde
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Desde
+      - name: hasta
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Hasta
+      - name: incluir_estimados
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+          title: Incluir Estimados
+      - name: confianza_minima
+        in: query
+        required: false
+        schema:
+          enum:
+          - todas
+          - baja
+          - alta
+          type: string
+          default: todas
+          title: Confianza Minima
+      - name: formato
+        in: query
+        required: false
+        schema:
+          enum:
+          - json
+          - csv
+          type: string
+          default: json
+          title: Formato
+      - name: X-API-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Key
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/modelos/metricas:
+    get:
+      tags:
+      - modelos
+      summary: Obtener Metricas Modelos
+      description: Devuelve la comparativa de métricas entre líneas base, Hurdle/DTR
+        e IBM Granite TTM.
+      operationId: obtener_metricas_modelos_api_v1_modelos_metricas_get
+      parameters:
+      - name: variable
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - precipitacion
+            - tmax
+            - tmin
+            type: string
+          - type: 'null'
+          title: Variable
+      - name: longitud_hueco
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - corto
+            - medio
+            - largo
+            type: string
+          - type: 'null'
+          title: Longitud Hueco
+      - name: temporada
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - lluvias
+            - estiaje
+            type: string
+          - type: 'null'
+          title: Temporada
+      - name: X-API-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Key
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MetricaModeloResponse'
+                title: Response Obtener Metricas Modelos Api V1 Modelos Metricas Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/imputar:
+    post:
+      tags:
+      - imputacion
+      summary: Imputar Al Vuelo
+      description: Ejecuta imputación bajo demanda sobre registros enviados (perfil
+        operador).
+      operationId: imputar_al_vuelo_api_v1_imputar_post
+      parameters:
+      - name: X-API-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImputarRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/asistente/consultar:
+    post:
+      tags:
+      - asistente
+      summary: Consultar Asistente Siama
+      description: Responde consultas sobre confiabilidad y completitud usando tool
+        calling + auditoría.
+      operationId: consultar_asistente_siama_api_v1_asistente_consultar_post
+      parameters:
+      - name: X-API-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AsistenteRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsistenteResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    AsistenteRequest:
+      properties:
+        pregunta:
+          type: string
+          minLength: 3
+          title: Pregunta
+        clave_estacion:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Clave Estacion
+      type: object
+      required:
+      - pregunta
+      title: AsistenteRequest
+    AsistenteResponse:
+      properties:
+        respuesta:
+          type: string
+          title: Respuesta
+        verificado_guardian:
+          type: boolean
+          title: Verificado Guardian
+        resumen_auditoria:
+          $ref: '#/components/schemas/ResumenAuditoria'
+      type: object
+      required:
+      - respuesta
+      - verificado_guardian
+      - resumen_auditoria
+      title: AsistenteResponse
+    ConteoHuecos:
+      properties:
+        cortos:
+          type: integer
+          title: Cortos
+        medios:
+          type: integer
+          title: Medios
+        largos:
+          type: integer
+          title: Largos
+      type: object
+      required:
+      - cortos
+      - medios
+      - largos
+      title: ConteoHuecos
+    CreateApiKeyRequest:
+      properties:
+        perfil:
+          type: string
+          enum:
+          - investigador
+          - operador
+          title: Perfil
+      type: object
+      required:
+      - perfil
+      title: CreateApiKeyRequest
+    CreateApiKeyResponse:
+      properties:
+        api_key:
+          type: string
+          title: Api Key
+        prefijo:
+          type: string
+          title: Prefijo
+        perfil:
+          type: string
+          enum:
+          - investigador
+          - operador
+          title: Perfil
+      type: object
+      required:
+      - api_key
+      - prefijo
+      - perfil
+      title: CreateApiKeyResponse
+    DatasetStatusResponse:
+      properties:
+        project:
+          type: string
+          title: Project
+        files:
+          additionalProperties:
+            additionalProperties: true
+            type: object
+          type: object
+          title: Files
+        ready_with_official_data:
+          type: boolean
+          title: Ready With Official Data
+      type: object
+      required:
+      - project
+      - files
+      - ready_with_official_data
+      title: DatasetStatusResponse
+    DiagnosticoResponse:
+      properties:
+        clave_estacion:
+          type: string
+          title: Clave Estacion
+        variable:
+          type: string
+          enum:
+          - precipitacion
+          - tmax
+          - tmin
+          title: Variable
+        porcentaje_faltantes:
+          type: number
+          title: Porcentaje Faltantes
+        conteo_huecos:
+          $ref: '#/components/schemas/ConteoHuecos'
+        metodo_recomendado:
+          type: string
+          title: Metodo Recomendado
+        alerta_homogeneidad:
+          type: boolean
+          title: Alerta Homogeneidad
+        detalle_homogeneidad:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Detalle Homogeneidad
+      type: object
+      required:
+      - clave_estacion
+      - variable
+      - porcentaje_faltantes
+      - conteo_huecos
+      - metodo_recomendado
+      - alerta_homogeneidad
+      title: DiagnosticoResponse
+    EstacionMapaFeature:
+      properties:
+        type:
+          type: string
+          const: Feature
+          title: Type
+          default: Feature
+        geometry:
+          $ref: '#/components/schemas/GeoJSONPoint'
+        properties:
+          $ref: '#/components/schemas/EstacionMapaProperties'
+      type: object
+      required:
+      - geometry
+      - properties
+      title: EstacionMapaFeature
+    EstacionMapaProperties:
+      properties:
+        clave:
+          type: string
+          title: Clave
+        nombre:
+          type: string
+          title: Nombre
+        completitud_pct:
+          type: number
+          title: Completitud Pct
+        alerta_homogeneidad:
+          type: boolean
+          title: Alerta Homogeneidad
+        huecos_totales:
+          type: integer
+          title: Huecos Totales
+      type: object
+      required:
+      - clave
+      - nombre
+      - completitud_pct
+      - alerta_homogeneidad
+      - huecos_totales
+      title: EstacionMapaProperties
+    EstacionesMapaResponse:
+      properties:
+        type:
+          type: string
+          const: FeatureCollection
+          title: Type
+          default: FeatureCollection
+        features:
+          items:
+            $ref: '#/components/schemas/EstacionMapaFeature'
+          type: array
+          title: Features
+      type: object
+      required:
+      - features
+      title: EstacionesMapaResponse
+    GeoJSONPoint:
+      properties:
+        type:
+          type: string
+          const: Point
+          title: Type
+          default: Point
+        coordinates:
+          prefixItems:
+          - type: number
+          - type: number
+          type: array
+          maxItems: 2
+          minItems: 2
+          title: Coordinates
+      type: object
+      required:
+      - coordinates
+      title: GeoJSONPoint
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HealthResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+        service:
+          type: string
+          title: Service
+        version:
+          type: string
+          title: Version
+        region:
+          type: string
+          title: Region
+      type: object
+      required:
+      - status
+      - service
+      - version
+      - region
+      title: HealthResponse
+    ImputarRequest:
+      properties:
+        clave_estacion:
+          type: string
+          minLength: 1
+          title: Clave Estacion
+        variable:
+          type: string
+          enum:
+          - precipitacion
+          - tmax
+          - tmin
+          title: Variable
+        registros:
+          items:
+            $ref: '#/components/schemas/RegistroImputacionInput'
+          type: array
+          minItems: 1
+          title: Registros
+      type: object
+      required:
+      - clave_estacion
+      - variable
+      - registros
+      title: ImputarRequest
+    MetricaModeloResponse:
+      properties:
+        modelo:
+          type: string
+          title: Modelo
+        variable:
+          type: string
+          enum:
+          - precipitacion
+          - tmax
+          - tmin
+          title: Variable
+        longitud_hueco:
+          type: string
+          enum:
+          - corto
+          - medio
+          - largo
+          title: Longitud Hueco
+        temporada:
+          type: string
+          enum:
+          - lluvias
+          - estiaje
+          title: Temporada
+        rmse:
+          type: number
+          title: Rmse
+        mae:
+          type: number
+          title: Mae
+        bias:
+          type: number
+          title: Bias
+        kge:
+          type: number
+          title: Kge
+        pod:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Pod
+        far:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Far
+        cobertura_90:
+          type: number
+          title: Cobertura 90
+      type: object
+      required:
+      - modelo
+      - variable
+      - longitud_hueco
+      - temporada
+      - rmse
+      - mae
+      - bias
+      - kge
+      - cobertura_90
+      title: MetricaModeloResponse
+    RegistroImputacionInput:
+      properties:
+        fecha:
+          type: string
+          format: date
+          title: Fecha
+        valor:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Valor
+      type: object
+      required:
+      - fecha
+      title: RegistroImputacionInput
+    ResumenAuditoria:
+      properties:
+        pct_observado:
+          type: number
+          title: Pct Observado
+        pct_estimado:
+          type: number
+          title: Pct Estimado
+      type: object
+      required:
+      - pct_observado
+      - pct_estimado
+      title: ResumenAuditoria
+    SerieDato:
+      properties:
+        fecha:
+          type: string
+          title: Fecha
+        valor_observado:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Valor Observado
+        valor_estimado:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Valor Estimado
+        es_estimado:
+          type: boolean
+          title: Es Estimado
+        bandera_calidad:
+          type: string
+          enum:
+          - observado
+          - estimado_alta_confianza
+          - estimado_baja_confianza
+          - no_estimable
+          title: Bandera Calidad
+        incertidumbre_90:
+          anyOf:
+          - prefixItems:
+            - type: number
+            - type: number
+            type: array
+            maxItems: 2
+            minItems: 2
+          - type: 'null'
+          title: Incertidumbre 90
+      type: object
+      required:
+      - fecha
+      - valor_observado
+      - valor_estimado
+      - es_estimado
+      - bandera_calidad
+      - incertidumbre_90
+      title: SerieDato
+    SeriesResponse:
+      properties:
+        clave_estacion:
+          type: string
+          title: Clave Estacion
+        variable:
+          type: string
+          enum:
+          - precipitacion
+          - tmax
+          - tmin
+          title: Variable
+        datos:
+          items:
+            $ref: '#/components/schemas/SerieDato'
+          type: array
+          title: Datos
+      type: object
+      required:
+      - clave_estacion
+      - variable
+      - datos
+      title: SeriesResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

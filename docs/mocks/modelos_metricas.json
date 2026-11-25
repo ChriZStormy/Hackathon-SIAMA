@@ -1,0 +1,67 @@
+[
+  {
+    "modelo": "IBM Granite TTM",
+    "variable": "precipitacion",
+    "longitud_hueco": "corto",
+    "temporada": "lluvias",
+    "rmse": 2.628,
+    "mae": 1.869,
+    "bias": 0.04,
+    "kge": 0.82,
+    "pod": 0.86,
+    "far": 0.14,
+    "cobertura_90": 90.6
+  },
+  {
+    "modelo": "Hurdle/DTR",
+    "variable": "precipitacion",
+    "longitud_hueco": "corto",
+    "temporada": "lluvias",
+    "rmse": 2.753,
+    "mae": 1.959,
+    "bias": 0.06,
+    "kge": 0.79,
+    "pod": 0.84,
+    "far": 0.16,
+    "cobertura_90": 89.4
+  },
+  {
+    "modelo": "GCIDW",
+    "variable": "precipitacion",
+    "longitud_hueco": "corto",
+    "temporada": "lluvias",
+    "rmse": 3.284,
+    "mae": 2.32,
+    "bias": 0.14,
+    "kge": 0.68,
+    "pod": 0.72,
+    "far": 0.25,
+    "cobertura_90": 84.5
+  },
+  {
+    "modelo": "Razón Normal",
+    "variable": "precipitacion",
+    "longitud_hueco": "corto",
+    "temporada": "lluvias",
+    "rmse": 3.597,
+    "mae": 2.522,
+    "bias": 0.21,
+    "kge": 0.61,
+    "pod": 0.68,
+    "far": 0.31,
+    "cobertura_90": 80.2
+  },
+  {
+    "modelo": "Interpolación Lineal",
+    "variable": "precipitacion",
+    "longitud_hueco": "corto",
+    "temporada": "lluvias",
+    "rmse": 4.223,
+    "mae": 2.973,
+    "bias": 0.35,
+    "kge": 0.42,
+    "pod": 0.54,
+    "far": 0.44,
+    "cobertura_90": 72.0
+  }
+]
