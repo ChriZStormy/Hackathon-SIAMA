@@ -1,0 +1,45 @@
+project:
+  name: "SIAMA-Impute"
+  version: "0.1.0"
+  region: "Guanajuato, México"
+  crs_epsg: 4326
+
+paths:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  external_dir: "data/external"
+  files:
+    estaciones: "estaciones.csv"
+    series_diarias: "series_diarias.csv"
+    covariables: "covariables.gpkg"
+    test_publico: "test_publico.csv"
+  starter_notebook: "notebooks/01_starter_and_baseline.ipynb"
+
+data_schema:
+  station_id_col: "id_estacion"
+  date_col: "fecha"
+  variables:
+    - "precipitacion"
+    - "tmax"
+    - "tmin"
+  missing_value_codes:
+    - -999
+    - -999.0
+    - -9999
+    - -99.9
+    - "NA"
+    - "N/A"
+    - "null"
+    - ""
+
+physical_constraints:
+  precip_min: 0.0
+  enforce_tmax_gt_tmin: true
+  temp_min_plausible_c: -20.0
+  temp_max_plausible_c: 55.0
+
+baseline:
+  method: "linear_interpolation"
+  max_gap_days: 7
+  validation_mask_fraction: 0.10
+  random_seed: 42

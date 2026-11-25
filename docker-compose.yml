@@ -1,0 +1,77 @@
+services:
+  postgis:
+    image: postgis/postgis:16-3.4
+    container_name: siama_postgis
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-siama_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-siama_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-siama_impute}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-siama_user} -d ${POSTGRES_DB:-siama_impute}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # ----------------------------------------------------------------------------
+  # Servicios acoplables en fases posteriores (activables con --profile full)
+  # ----------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    container_name: siama_api
+    profiles: ["full", "api"]
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: postgis
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      postgis:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config:ro
+
+  pipeline:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.pipeline
+    container_name: siama_pipeline
+    profiles: ["full", "pipeline"]
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: postgis
+    depends_on:
+      postgis:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config:ro
+    command: ["python", "-m", "src.pipeline.verify_setup"]
+
+  web-demo:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: siama_web_demo
+    profiles: ["full", "web"]
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    depends_on:
+      - api
+
+volumes:
+  postgis_data:
+    name: siama_postgis_data
